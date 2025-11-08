@@ -1,0 +1,13 @@
+---
+name: "LuminaOS"
+version: "1.0"
+strings:
+  productName: "LuminaOS"
+  shortProductName: "LuminaOS"
+images:
+  productLogo: "/usr/share/calamares/branding/luminaos/logo.svg"
+  productIcon: "/usr/share/calamares/branding/luminaos/logo.svg"
+style:
+  sidebarBackground: "#F8FAFC"
+  sidebarText: "#0B1020"
+  primary: "#14B8A6"

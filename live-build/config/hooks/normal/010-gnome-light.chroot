@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+mkdir -p /etc/dconf/db/local.d
+cat >/etc/dconf/db/local.d/00-luminaos <<'EOF'
+[org/gnome/desktop/interface]
+color-scheme='prefer-light'
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/luminaos/LuminaOS-light.svg'
+picture-uri-dark='file:///usr/share/backgrounds/luminaos/LuminaOS-light.svg'
+picture-options='zoom'
+EOF
+/usr/bin/dconf update || true

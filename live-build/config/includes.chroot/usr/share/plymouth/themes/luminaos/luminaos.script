@@ -1,0 +1,57 @@
+// Minimal Plymouth script without external images
+// Shows "LuminaOS" and a simple spinner
+
+Window = Window.GetDefaultWindow();
+ScreenW = Window.GetWidth();
+ScreenH = Window.GetHeight();
+
+fun center_x(w) { return (ScreenW - w) / 2; }
+fun center_y(h) { return (ScreenH - h) / 2; }
+
+// Colors
+bg = Color(248/255.0, 250/255.0, 252/255.0); // #F8FAFC
+fg = Color(11/255.0, 16/255.0, 32/255.0);    // #0B1020
+accent = Color(20/255.0, 184/255.0, 166/255.0); // #14B8A6
+
+// Fill background
+Window.SetBackgroundTopColor(bg);
+Window.SetBackgroundBottomColor(bg);
+
+// Title label
+Title = Label("LuminaOS");
+Title.SetColor(fg);
+Title.SetFont("Sans Bold 34");
+TitleW = Title.GetWidth();
+TitleH = Title.GetHeight();
+Title.SetPosition(center_x(TitleW), center_y(TitleH) - 40);
+
+// Spinner parameters
+radius = 18;
+segments = 12;
+angle = 0;
+
+function draw_spinner() {
+    // Clear previous by drawing nothing; Plymouth handles redraw
+    for (i = 0; i < segments; i = i + 1) {
+        a = (angle + i * (360/segments)) * 3.14159 / 180.0;
+        x = ScreenW/2 + cos(a) * 48;
+        y = ScreenH/2 + sin(a) * 48 + 24;
+        alpha = (i+1) / segments;
+        dot = Sprite();
+        dot.SetColor(accent.R, accent.G, accent.B, alpha);
+        dot.SetX(x);
+        dot.SetY(y);
+        dot.SetZ(10);
+        dot.SetOpacity(alpha);
+        dot.DrawCircle(radius * (alpha*0.5 + 0.5));
+    }
+    angle = (angle + 12) % 360;
+}
+
+fun on_idle() {
+    draw_spinner();
+    Plymouth.Sleep(0.06);
+    return TRUE; // keep animating
+}
+
+Plymouth.SetRefreshFunction(on_idle);

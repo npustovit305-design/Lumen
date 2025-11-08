@@ -1,0 +1,59 @@
+name: Build LuminaOS ISO
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'live-build/**'
+      - 'calamares/**'
+      - 'branding/**'
+      - '.github/workflows/build-iso.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            live-build debootstrap syslinux-common isolinux \
+            squashfs-tools xorriso git wget curl ca-certificates \
+            calamares calamares-settings-debian \
+            cryptsetup lvm2 btrfs-progs \
+            task-gnome-desktop gdm3 network-manager \
+            pipewire wireplumber fwupd cups \
+            firmware-misc-nonfree mesa-vulkan-drivers intel-media-driver \
+            ffmpeg gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+            gstreamer1.0-plugins-bad gstreamer1.0-libav
+
+      - name: Configure live-build
+        working-directory: live-build
+        run: |
+          lb clean
+          bash ./auto/config
+
+      - name: Build ISO
+        working-directory: live-build
+        run: |
+          lb build
+          cp -f ../live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" || true
+          # Some lb versions output into parent dir; ensure artifact exists
+          if [ ! -f "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" ] && [ -f "../live-image-amd64.hybrid.iso" ]; then
+            cp ../live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso"
+          fi
+          if [ ! -f "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" ] && [ -f "live-image-amd64.hybrid.iso" ]; then
+            cp live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso"
+          fi
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LuminaOS-gnome-amd64
+          path: LuminaOS-gnome-amd64.iso

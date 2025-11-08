@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+# Set LuminaOS Plymouth as default and rebuild initramfs in live env
+mkdir -p /etc/plymouth
+cat >/etc/plymouth/plymouthd.conf <<'EOF'
+[Daemon]
+Theme=luminaos
+ShowDelay=0
+DeviceTimeout=8
+EOF
+
+if command -v update-initramfs >/dev/null 2>&1; then
+  update-initramfs -u || true
+fi

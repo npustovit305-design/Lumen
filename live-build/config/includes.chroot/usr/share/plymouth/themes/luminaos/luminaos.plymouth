@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=LuminaOS
+Description=LuminaOS light minimal theme
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/luminaos
+ScriptFile=/usr/share/plymouth/themes/luminaos/luminaos.script
