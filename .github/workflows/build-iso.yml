@@ -13,37 +13,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: debian:bookworm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             live-build debootstrap syslinux-common isolinux \
             squashfs-tools xorriso git wget curl ca-certificates gnupg
-          apt-get clean
+          sudo apt-get clean
 
       - name: Configure live-build
         working-directory: live-build
         run: |
-          lb clean
-          bash ./auto/config
+          sudo lb clean
+          sudo bash ./auto/config
 
       - name: Build ISO
         working-directory: live-build
         run: |
-          lb build
-          cp -f ../live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" || true
+          sudo lb build
+          sudo cp -f ../live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" || true
           # Some lb versions output into parent dir; ensure artifact exists
           if [ ! -f "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" ] && [ -f "../live-image-amd64.hybrid.iso" ]; then
-            cp ../live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso"
+            sudo cp ../live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso"
           fi
           if [ ! -f "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso" ] && [ -f "live-image-amd64.hybrid.iso" ]; then
-            cp live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso"
+            sudo cp live-image-amd64.hybrid.iso "$GITHUB_WORKSPACE/LuminaOS-gnome-amd64.iso"
           fi
 
       - name: Upload ISO artifact
