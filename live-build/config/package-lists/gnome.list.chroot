@@ -30,3 +30,11 @@ curl
 git
 calamares
 calamares-settings-debian
+plymouth
+plymouth-themes
+live-boot
+live-config
+systemd-sysv
+grub-pc-bin
+grub-efi-amd64
+grub-efi-amd64-bin
