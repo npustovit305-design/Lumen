@@ -1,0 +1,7 @@
+# LuminaOS Debian 12 (bookworm) sources
+# Main archive
+deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+# Security updates
+deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+# Point releases / stable updates
+deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
