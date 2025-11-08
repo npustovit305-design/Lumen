@@ -24,14 +24,8 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             live-build debootstrap syslinux-common isolinux \
-            squashfs-tools xorriso git wget curl ca-certificates \
-            calamares calamares-settings-debian \
-            cryptsetup lvm2 btrfs-progs \
-            task-gnome-desktop gdm3 network-manager \
-            pipewire wireplumber fwupd cups \
-            firmware-misc-nonfree mesa-vulkan-drivers intel-media-driver \
-            ffmpeg gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
-            gstreamer1.0-plugins-bad gstreamer1.0-libav
+            squashfs-tools xorriso git wget curl ca-certificates gnupg
+          apt-get clean
 
       - name: Configure live-build
         working-directory: live-build
@@ -57,3 +51,12 @@ jobs:
         with:
           name: LuminaOS-gnome-amd64
           path: LuminaOS-gnome-amd64.iso
+
+      - name: Upload build logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lb-logs
+          path: |
+            live-build/*.log
+            live-build/*/*.log
