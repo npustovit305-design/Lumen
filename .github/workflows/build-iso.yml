@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      LB_DEBUG: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +24,8 @@ jobs:
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             live-build debootstrap syslinux-common isolinux \
-            squashfs-tools xorriso git wget curl ca-certificates gnupg
+            squashfs-tools xorriso git wget curl ca-certificates gnupg \
+            fakeroot
           sudo apt-get clean
 
       - name: Configure live-build
@@ -50,6 +53,16 @@ jobs:
           name: LuminaOS-gnome-amd64
           path: LuminaOS-gnome-amd64.iso
 
+      - name: Print last 200 lines of live-build logs (always)
+        if: always()
+        run: |
+          echo "Listing logs under live-build/" || true
+          find live-build -type f -name "*.log" -print || true
+          for f in $(find live-build -type f -name "*.log" 2>/dev/null); do
+            echo "========== $f (tail -n 200) =========="
+            tail -n 200 "$f" || true
+          done
+
       - name: Upload build logs (always)
         if: always()
         uses: actions/upload-artifact@v4
@@ -58,3 +71,14 @@ jobs:
           path: |
             live-build/*.log
             live-build/*/*.log
+
+      - name: Create release and upload ISO (manual runs only)
+        if: github.event_name == 'workflow_dispatch' && success()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly-${{ github.run_number }}
+          name: LuminaOS nightly ${{ github.run_number }}
+          draft: false
+          prerelease: true
+          files: |
+            LuminaOS-gnome-amd64.iso
